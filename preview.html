@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PharmSIM Interactive Viral Map</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --text:#17324d;
+      --muted:#5b7083;
+      --blue:#1a73e8;
+      --blue-dark:#0b57d0;
+      --green:#1e8e3e;
+      --orange:#f29900;
+      --purple:#7b61ff;
+      --red:#d93025;
+      --border:#d9e2ec;
+      --shadow:0 10px 25px rgba(18,52,86,.12);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px 16px 40px}
+    .hero{background:linear-gradient(135deg,#174a8b,#1a73e8);color:#fff;border-radius:20px;padding:28px 22px;box-shadow:var(--shadow);margin-bottom:22px}
+    .hero h1{margin:0 0 8px;font-size:clamp(28px,4vw,42px);line-height:1.1}
+    .hero p{margin:0;font-size:16px;opacity:.95}
+    .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);padding:8px 12px;border-radius:999px;font-size:14px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+    .panel h2{margin:0 0 12px;font-size:22px}
+    .panel p.sub{margin:0 0 18px;color:var(--muted)}
+    .steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .step{border:none;border-radius:16px;padding:18px 16px;color:#fff;text-align:left;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;box-shadow:0 8px 16px rgba(0,0,0,.12);min-height:120px}
+    .step:hover{transform:translateY(-2px);filter:brightness(1.02)}
+    .step:focus{outline:3px solid #11182722;outline-offset:2px}
+    .step small{display:block;opacity:.9;margin-bottom:8px;font-size:13px;letter-spacing:.2px}
+    .step strong{display:block;font-size:22px;margin-bottom:8px;line-height:1.1}
+    .step span{display:block;font-size:14px;line-height:1.45;opacity:.95}
+    .step.attach{background:linear-gradient(135deg,#1e8e3e,#34a853)}
+    .step.entry{background:linear-gradient(135deg,#1a73e8,#4a90ff)}
+    .step.replication{background:linear-gradient(135deg,#7b61ff,#9a82ff)}
+    .step.release{background:linear-gradient(135deg,#f29900,#ffb020)}
+    .sidecard{background:#f8fbff;border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px}
+    .sidecard h3{margin:0 0 8px;font-size:18px}
+    .sidecard ul{margin:8px 0 0 18px;padding:0;line-height:1.55}
+    .note{background:#fff8e1;border:1px solid #f4d58d;color:#6b4f00;border-radius:14px;padding:12px 14px;font-size:14px}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(8,15,26,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:1000}
+    .modal{background:#fff;border-radius:20px;width:min(680px,100%);box-shadow:0 20px 50px rgba(0,0,0,.22);overflow:hidden}
+    .modal-header{padding:18px 20px;color:#fff;display:flex;align-items:center;justify-content:space-between}
+    .modal-header h3{margin:0;font-size:24px}
+    .close-btn{border:none;background:rgba(255,255,255,.16);color:#fff;width:38px;height:38px;border-radius:999px;cursor:pointer;font-size:18px}
+    .modal-body{padding:20px}
+    .modal-body h4{margin:0 0 8px;font-size:17px;color:var(--text)}
+    .modal-body p{margin:0 0 14px;line-height:1.6}
+    .drug-list{margin:0;padding-left:18px;line-height:1.65}
+    .footer-tip{margin-top:16px;padding:12px 14px;border-radius:12px;background:#eef6ff;border:1px solid #cfe3fb;color:#174a8b;font-size:14px}
+    @media (max-width: 860px){.grid{grid-template-columns:1fr}}
+    @media (max-width: 640px){.steps{grid-template-columns:1fr}.hero{padding:22px 18px}.panel{padding:16px}.modal-header h3{font-size:20px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>PharmSIM Interactive Viral Map</h1>
+      <p>Click any stage of the viral life cycle to view the mechanism, key antiviral drugs, and clinical use.</p>
+      <div class="legend">
+        <div class="pill">Module: Antivirals</div>
+        <div class="pill">Topic: Mechanisms & Clinical Uses</div>
+        <div class="pill">Google Sites Ready</div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Viral Life Cycle</h2>
+        <p class="sub">Select a step below to open the explanation panel.</p>
+
+        <div class="steps">
+          <button class="step attach" data-step="attach">
+            <small>Step 1</small>
+            <strong>Attachment</strong>
+            <span>Virus binds to specific receptors on the host cell surface.</span>
+          </button>
+
+          <button class="step entry" data-step="entry">
+            <small>Step 2</small>
+            <strong>Entry & Uncoating</strong>
+            <span>Virus enters the cell and releases its genetic material.</span>
+          </button>
+
+          <button class="step replication" data-step="replication">
+            <small>Step 3</small>
+            <strong>Replication</strong>
+            <span>Virus hijacks host machinery to make new viral nucleic acid and proteins.</span>
+          </button>
+
+          <button class="step release" data-step="release">
+            <small>Step 4</small>
+            <strong>Release</strong>
+            <span>New virions assemble and leave the host cell to infect other cells.</span>
+          </button>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h2>Quick Notes</h2>
+
+        <div class="sidecard">
+          <h3>Key Principle</h3>
+          <p>Antivirals usually do not destroy viruses directly. They reduce viral multiplication by blocking specific stages in the viral life cycle.</p>
+        </div>
+
+        <div class="sidecard">
+          <h3>High-yield Drug Examples</h3>
+          <ul>
+            <li>Amantadine / Rimantadine — uncoating of Influenza A</li>
+            <li>Oseltamivir / Zanamivir — neuraminidase inhibition</li>
+            <li>Ribavirin — inhibits RNA synthesis</li>
+            <li>Acyclovir / Ganciclovir — inhibit viral DNA polymerase</li>
+            <li>Interferon — stimulates host antiviral response</li>
+          </ul>
+        </div>
+
+        <div class="note">
+          Tip: Upload this file to GitHub as <strong>index.html</strong>, enable GitHub Pages, then embed the live URL in Google Sites.
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header" id="modalHeader">
+        <h3 id="modalTitle">Title</h3>
+        <button class="close-btn" id="closeBtn" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const content = {
+      attach: {
+        color: "linear-gradient(135deg,#1e8e3e,#34a853)",
+        title: "Step 1: Attachment",
+        html: `
+          <h4>What happens?</h4>
+          <p>The virus first attaches to receptors on the host cell. Without attachment, infection cannot begin.</p>
+          <h4>Key drugs</h4>
+          <ul class="drug-list">
+            <li><strong>Maraviroc</strong> — blocks the CCR5 receptor in HIV.</li>
+            <li><strong>Enfuvirtide</strong> — prevents fusion of HIV with the host cell membrane.</li>
+          </ul>
+          <h4>Clinical use</h4>
+          <p>Mainly important in HIV therapy, where blocking entry helps reduce viral spread into new cells.</p>
+          <div class="footer-tip">Memory tip: No attachment = no infection.</div>
+        `
+      },
+      entry: {
+        color: "linear-gradient(135deg,#1a73e8,#4a90ff)",
+        title: "Step 2: Entry & Uncoating",
+        html: `
+          <h4>What happens?</h4>
+          <p>After entering the host cell, the virus sheds its coat and releases nucleic acid into the cell.</p>
+          <h4>Key drugs</h4>
+          <ul class="drug-list">
+            <li><strong>Amantadine / Rimantadine</strong> — block uncoating of <strong>Influenza A</strong>.</li>
+          </ul>
+          <h4>Clinical use</h4>
+          <p>Used in prevention and treatment of Influenza A in the notes, but remember their practical use is limited because resistance is common.</p>
+          <div class="footer-tip">High-yield point: Amantadine works on Influenza A, not Influenza B.</div>
+        `
+      },
+      replication: {
+        color: "linear-gradient(135deg,#7b61ff,#9a82ff)",
+        title: "Step 3: Replication",
+        html: `
+          <h4>What happens?</h4>
+          <p>The virus hijacks host enzymes, ribosomes, and cellular machinery to copy its genome and produce viral proteins.</p>
+          <h4>Key drugs</h4>
+          <ul class="drug-list">
+            <li><strong>Ribavirin</strong> — inhibits RNA synthesis and viral replication; used in severe RSV bronchiolitis and chronic hepatitis C.</li>
+            <li><strong>Acyclovir</strong> — inhibits viral DNA polymerase and causes chain termination; used in HSV and VZV infections.</li>
+            <li><strong>Ganciclovir</strong> — similar concept, especially important for CMV infections.</li>
+            <li><strong>Interferon</strong> — stimulates host antiviral response and inhibits viral protein synthesis.</li>
+          </ul>
+          <h4>Clinical use</h4>
+          <p>This is one of the most important antiviral targets because blocking replication prevents the virus from multiplying inside the host.</p>
+          <div class="footer-tip">Memory tip: Replication blockers are central to herpes, CMV, hepatitis, and RSV treatment.</div>
+        `
+      },
+      release: {
+        color: "linear-gradient(135deg,#f29900,#ffb020)",
+        title: "Step 4: Release",
+        html: `
+          <h4>What happens?</h4>
+          <p>New viral particles are assembled and released from the host cell, allowing infection to spread to other cells.</p>
+          <h4>Key drugs</h4>
+          <ul class="drug-list">
+            <li><strong>Oseltamivir</strong> — oral neuraminidase inhibitor.</li>
+            <li><strong>Zanamivir</strong> — inhaled neuraminidase inhibitor.</li>
+          </ul>
+          <h4>Clinical use</h4>
+          <p>Used for Influenza A and B. These drugs shorten disease duration, reduce severity, and are used for both treatment and prophylaxis.</p>
+          <div class="footer-tip">High-yield point: Neuraminidase inhibitors stop release of influenza virions from infected cells.</div>
+        `
+      }
+    };
+
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalHeader = document.getElementById("modalHeader");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
+    const closeBtn = document.getElementById("closeBtn");
+
+    document.querySelectorAll(".step").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-step");
+        const item = content[key];
+        modalHeader.style.background = item.color;
+        modalTitle.textContent = item.title;
+        modalBody.innerHTML = item.html;
+        modalBackdrop.style.display = "flex";
+        modalBackdrop.setAttribute("aria-hidden", "false");
+      });
+    });
+
+    function closeModal(){
+      modalBackdrop.style.display = "none";
+      modalBackdrop.setAttribute("aria-hidden", "true");
+    }
+
+    closeBtn.addEventListener("click", closeModal);
+    modalBackdrop.addEventListener("click", (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
+  </script>
+</body>
+</html>
